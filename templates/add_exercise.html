@@ -1,0 +1,65 @@
+{% extends 'navbar.html' %}
+{% block extra_head %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<style>
+    .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 48
+    }
+    </style>
+{% endblock %}
+{% block nav_item_addexercise %}active{% endblock nav_item_addexercise %} 
+{% block content %}
+<script>
+var totalsets=2;
+function addNewSet(){
+    console.log("in");
+    var current=document.getElementById("exercisename");
+    var before_element=document.getElementById("add_set");
+    var new_reps=document.createElement("input");
+    var br1=document.createElement("br");
+    var br2=document.createElement("br");
+    new_reps.type="text";
+    new_reps.placeholder="Set "+totalsets+" Reps";
+    new_reps.name="set"+totalsets+"reps";
+    new_reps.classList.add("form-control");
+    new_reps.length=current.length;
+    before_element.parentNode.insertBefore(new_reps,before_element);
+    before_element.parentNode.insertBefore(br1,before_element);
+    var new_weight=document.createElement("input");
+    new_weight.type="text";
+    new_weight.placeholder="Set "+totalsets+" Weight in lbs";
+    new_weight.name="set"+totalsets+"weight";
+    new_weight.classList.add("form-control");
+    new_weight.length=current.length;
+    before_element.parentNode.insertBefore(new_weight,before_element);
+    before_element.parentNode.insertBefore(br2,before_element);
+    var number_of_sets=document.getElementById("number_of_sets");
+    number_of_sets.value=totalsets;
+    // console.log(number_of_sets.value)
+    totalsets+=1;
+    // console.log(totalsets);
+    return true;
+
+}
+</script>
+<div style="margin: 5% 30% 30% 30%; box-sizing: border-box;">
+    <div class="form-group">
+        <form id="exercise_log" action="" method="POST">
+            {% csrf_token %}
+            <input class="form-control" name="exercise" id="exercisename" placeholder="Exercise Name" type="text"><br>
+            <input class="form-control" name="set1reps" placeholder="Set 1 Reps" type="text"><br>
+            <input class="form-control" name="set1weight" placeholder="Set 1 Weight in lbs" type="text"><br>
+            <button type="button" id="add_set" onclick="addNewSet()"><span class="material-symbols-outlined">
+                add
+                </span></button><br><br>
+            <input class="form-control" name="notes" placeholder="Notes" type="textarea"><br>
+            <input type="submit" class="btn btn-primary" value="Submit">
+            <input type="hidden" id="number_of_sets" name="number_of_sets" value="1">
+        </form>    
+    </div>
+    </div>
+{% endblock %}

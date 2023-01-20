@@ -1,0 +1,155 @@
+{% extends 'navbar.html' %}
+{% block extra_head %}
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+<style>
+   td,th{
+    width: 10px;
+   }
+</style>
+{% endblock %}
+{% block nav_item_home %}active{% endblock nav_item_home %} 
+{% block content %}
+<!-- <h1 style="text-align: center;">GET READY</h1> -->
+<div style="margin: 5% 30% 3% 30%; box-sizing: border-box;">
+    <div class="form-group">
+        <form id="exercise_log" action="" method="POST">
+            {% csrf_token %}
+            <input class="form-control" name="exercise" id="exercisename" placeholder="Exercise Name" type="text"><br><br><input type="submit" class="btn btn-primary" value="Get Log">
+        </form>    
+    </div>
+    </div>
+{% if videos  %}
+<h3 style="text-align: center;">{{ exercise }}</h3>
+<div id="carouselExampleControls" class="carousel carousel-dark slide" data-ride="carousel" style="text-align: center;">
+    <div class="carousel-inner">
+        {% for video in videos %}
+      <div class="carousel-item {{ video.active }}">
+        <iframe id="{{ video.id }}" width="560" height="315" src="{{ video.url }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+      {% endfor %}
+    </div>
+    <!-- <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a> -->
+    
+  </div>
+  
+
+
+  
+
+
+
+
+  
+{% for day in log %}
+<div style="margin-left: 10%;margin-right: 10%;">
+<h3>{{ day.date }}</h3>
+<h5>{{ day.notes }}</h5>
+<table class="table table-sm table-dark" style="text-align: center;margin-bottom: 4%;">
+    <thead>
+    <tr>
+        <th scope="col">Set #</th>
+        <th scope="col">Reps</th>
+        <th scope="col">Weight (lbs)</th>
+    </tr>
+    </thead>
+    {% for sets in day.all_sets %}
+        <tr>
+            <th scope="row">{{ sets.set }}</td>
+            <td>{{ sets.reps }}</td>
+            <td>{{ sets.weight }}</td>
+        </tr>
+    {% endfor %}
+</table>
+</div>
+{% endfor %}
+{% endif %}
+<script>
+    var slider = $('#carouselExampleControls').carousel({
+});
+    $(document).ready(function()
+    {
+        // Slide the carousel upon button click
+        // .carousel('prev') - Cycles to the previous item
+        // .carousel('next') - Cycles to the next item.
+        // Reference: https://getbootstrap.com/docs/4.4/components/carousel/#methods
+        $('#prevMovie').on('click', function() {
+            slider.carousel('prev');
+        });
+        $('#nextMovie').on('click', function() {
+            slider.carousel('next');
+        });
+
+        // When a slide occurs, pause the current iframe video that is playing
+        // player.pauseVideo():Void - Pauses the currently playing video.
+        // Reference: https://developers.google.com/youtube/iframe_api_reference#Playback_controls
+       slider.on('slide.bs.carousel', function(event) {
+            // The variable "players" contain each Youtube Player for each iframe video
+            // Reference: https://developers.google.com/youtube/iframe_api_reference#Loading_a_Video_Player
+            // event.from - The index of the current video (before the slide occurs)
+            //            - It is also the index of the corresponding player for the current video
+            // Reference: https://getbootstrap.com/docs/4.4/components/carousel/#events
+            players[event.from].pauseVideo();
+        });
+    });
+
+    // Start of snippet from: https://developers.google.com/youtube/iframe_api_reference
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    var players = []; // would contain 1 player for each iframe video
+    function onYouTubeIframeAPIReady()
+    {
+        var allMovieIframes = document.getElementById("carouselExampleControls").getElementsByTagName('iframe');
+        for (currentIFrame of allMovieIframes)
+        {
+            console.log(currentIFrame.id);
+            players.push(new YT.Player(
+                currentIFrame.id, // the target iframe video, here it is  either katniss, rancho, or logan
+                { events: { 'onStateChange': onPlayerStateChange } }
+            ));
+        }
+        console.log(players);
+    }
+    function onPlayerStateChange(event) // triggered everytime ANY iframe video player among the "players" list is played, paused, ended, etc.
+    {
+        // Check if any iframe video is being played (or is currently buffering to be played)
+        // Reference: https://developers.google.com/youtube/iframe_api_reference#Events
+        if (event.data == YT.PlayerState.PLAYING || event.data == YT.PlayerState.BUFFERING)
+        {
+            // If any player has been detected to be currently playing or buffering, pause the carousel from sliding
+            // .carousel('pause') - Stops the carousel from cycling through items.
+            // Reference: https://getbootstrap.com/docs/4.4/components/carousel/#methods
+            console.log("inpause",event.data);
+            slider.carousel('pause');
+        }
+        else
+        {
+            // If there are no currently playing nor buffering videos, resume the sliding of the carousel.
+            // This means that once the current video is in a state that is not playing (aside from buffering), either it was:
+            //     1. paused intentionally
+            //     2. paused as an effect of a slide
+            //     3. video has ended
+            //     4. wasn't totally played from the start
+            //     5. and literally any form where the video timer isn't running ;)
+            //     - then the carousel would now resume sliding.
+            console.log('inplay');
+            slider.carousel({'pause': false});
+        }
+    }
+    // End of snippet from Youtube iframe API
+</script>
+{% endblock %}
