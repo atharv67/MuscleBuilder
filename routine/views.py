@@ -20,6 +20,8 @@ def init_db():
 
 def index(request):
     print('yes')
+    if 'user' not in request.session:
+        return redirect('login')
     if request.method=='POST':
         print('init')
         exercise_name=request.POST['exercise']
@@ -128,6 +130,6 @@ def show_log(request,exercise):
 
 def logout(request):
     request.session.clear()
-    return redirect('/login')
+    return redirect('login')
  
 
