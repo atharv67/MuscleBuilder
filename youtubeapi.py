@@ -15,7 +15,7 @@ scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
 def get_videos(exercise_name):
     # Disable OAuthlib's HTTPS verification when running locally.
     # *DO NOT* leave this option enabled in production.
-    api_key="AIzaSyCtw7UruANrsQAAzvLe-M6Ke9y19z7VScY"
+    api_key="Your_Key"
     youtube=googleapiclient.discovery.build('youtube','v3',developerKey=api_key)
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "0"
 
